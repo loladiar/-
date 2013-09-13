@@ -1,0 +1,195 @@
+Keywords: observations, [SGD (logistic regression)](http://cwiki.apache.org/confluence/display/MAHOUT/Logistic+Regression), loss function, inference, ...
+
+### TOC
+
+* [ML introduction](#ml-introduction)
+* [Modeling WF](#modeling-wf)
+  * [Problem definition](#ml-problem-definition)
+  * [Data Collection & Integration](#data-collection)
+  * [Data Preparation & Clean up](#data-preparation)
+  * [Data Visualization & Analysis](#data-analysis)
+
+### ML introduction
+
+ML is programming by relationships or patterns in data.
+ML algorithms constructs mathematical models of data to discover patterns.
+ML models are subsequently used to make decisions or predictions on unseen data.
+e.g. we use ML models out of purchase, browsing, and search histories to predict if a buyer will purchase a product.
+
+Why ML? handwriting & speech recognizations cannot be adequately solved by rule-based algorithms.
+ML by patterns in data is much more effective/scalable when data/patterns are personalized, large in volume, or changing in time, 
+
+Note Mahout has algorithms on 3C: collaborative filtering, classification, and clustering that are also called recommender, supervised learning, and unsupervised learning.
+
+#### Supervised ML
+
+We can formulate many of ML problems in terms of prediction of a desired target property of an object, e.g. if a website is e-commerce or not, given other known properties of the object (e.g. text, hyperlinks).
+Supervised ML approach consists of two key phases - (1) training, and (2) prediction -- training or model building involves learning a model or patterns from historical data (e.g. postive & negative examples of e-commerce sites), and prediction uses the learned model to determine the target property.  
+
+##### Classification vs. Regression
+
+In classification problems, the target property takes discrete values (e.g., whether a website is e-commerce or not),  
+while in regression problems, the target property is continuous (e.g., the demand forecast for a product). 
+
+### Modeling WF
+
+1. ML problem defintion
+2. Data collection & integration
+3. Data preparation & cleaning
+4. Data visualization & analysis
+5. Feature engineering
+6. Model training & parameter tuning
+7. Model evaluation
+8. Model deployment
+
+#### ML problem definition
+
+##### Key Elements of Machine Learning Problem
+
+Machine learning (ML) problems have three main elements: observation, feature, and label.
+
+##### Observation
+
+An observation (example, or instance) is the object that is being learned from and predicted on.
+When detecting fraudulent orders placed on retail sites, orders are the objects which need to be 
+determined as fraud or non-fraud, and each order constitutes an observation for the problem.
+When classifying products into appropriate categories, each individual product is the object 
+being trained on and scored, and constitutes a single observation for that problem.
+
+##### Feature
+
+Usually, an observation is described by a set of features, also known as attributes or variables.
+e.g., the features of an order include the date/time, the product, the cost, the buyer, the shipping cost, and so on.
+The features of a product are its title, description, price, brand, model #, average # of glance views per day, # of reviews, etc.
+Features can have different data types: numeric (real valued), binary (two values), categorical (multiple values) or unstructured text.
+
+##### Label
+
+Label (or target property variable) is the value that we are trying to predict. Labels are a special requirement for Supervised ML, 
+as we learn from the values in the historical data.
+
+In fraud detection problem, the labels would be binary indicators in the historical data,
+which indicate whether an order was determined to be fraudulent or not.
+In product classification problem, the training data would contain products which have been categorized using rules or manual review.
+The assigned category for each product would then constitute the label for this problem.
+
+Note that labels must be assigned to observations in the historical data which is used for training and testing a model.
+The training algorithm tries to learn the best model that can accurately predict the (known) label for maximum number of observations during the testing phase. When using the model for predictions, we only need observations with corresponding features without the labels. The model will then predict the label based on the learned parameters.
+
+##### Income Classification Problem
+
+Let's categorize high-income individuals in census data - predict whether the income for an individual exceeds $50K annually based on census data.
+This is a standard dataset made available by UCI machine learning repository (originally from 1994 US Census), and used extensively by ML community to experiment different algorithms. See more details at http://goo.gl/sEUK3J.
+
+Below are the features with their data types:
+
+Feature | Description | Data Type
+--- | --- | ---
+income class id (Label) | Whether income is greater or less than $50,000. | Binary {"<50K" or ">=50K"}
+age	| Age of the individual. |	Numeric
+workclass | Working class of the individual. |	Categorical {Private, Self-emp-not-inc, Self-emp-inc, Federal-gov, Local-gov, State-gov, Without-pay, Never-worked}
+final-weight | Weighted estimate across different socio-economic characteristics. |	Numeric
+education | Education level of the individual. |	Categorical {Bachelors, Some-college, 11th, HS-grad, Prof-school, Assoc-acdm, Assoc-voc, 9th, 7th-8th, 12th, Masters, 1st-4th, 10th, Doctorate, 5th-6th, Preschool}
+education-num | Number of years of education of the individual. |	Numeric
+marital-status | Marital status of the individual. |	Categorical {Married-civ-spouse, Divorced, Never-married, Separated, Widowed, Married-spouse-absent, Married-AF-spouse}
+occupation | Occupation of the individual. | Categorical {Tech-support, Craft-repair, Other-service, Sales, Exec-managerial, Prof-specialty, Handlers-cleaners, Machine-op-inspct, Adm-clerical, Farming-fishing, Transport-moving, Priv-house-serv, Protective-serv, Armed-Forces}
+relationship | Relationship. |	Categorical {Wife, Own-child, Husband, Not-in-family, Other-relative, Unmarried}
+race | Race of the individual. |	Categorical {White, Asian-Pac-Islander, Amer-Indian-Eskimo, Other, Black}
+gender	| Gender of the individual. |	Categorical {Female, Male}
+capital-gain | Capital gain.	| Numeric
+capital-loss | Capital loss. |	Numeric
+hours-per-week | Number of hours worked per week. |	Numeric
+native-country | Individual's native country. | Categorical { US, ... }
+
+Below are two observations from the data set:
+
+Label	| Age	| Work class	| Education	| Years of education	| Marital status	| Occupation	| Relationship	| Race	| Sex	| Capital gain	| Capital loss	| Hours per week	| Native country
+--- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+<50K	| 39	| State-gov	| Bachelors	| 13	| Never-married	| Adm-clerical	| Not-in-family	| White	| Male	| 2174	| 0	| 40	| United-States
+>=50K	| 31	| Private	| Masters | 13	| Married	| Prof-specialty	| Not-in-family	| White	| Female	| 14084	| 0	| 50	| United-States
+
+
+##### Sidebar: Is it an ML problem? 
+
+It is important to remember that ML is not a silver bullet. There are certain use cases where simple solutions can be developed without using ML techniques.
+For example, ML is not needed when the target property value to be determined can be obtained using simple mappings, rules, or computation which are relatively static.
+For example, obtaining the address or phone number of a customer, calculating order volume or GMS value for each customer, or determining if a customer has a new account.
+Similarly, ML is not required to model processes that are highly deterministic, such as the workflow of a customer of placing an order on retail sites.
+Such a process has fixed, predetermined steps which can be programmed without any data-driven learning needed.
+
+#### Data collection
+
+* income classification data sets for training & test from UCI machine learning repository
+
+```bash
+[ ! -e "$MAHOUT_WORK/adult.data" ] curl -o "$MAHOUT_WORK/adult.data" -kL http://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data
+[ ! -e "$MAHOUT_WORK/adult.data" ] curl -o "$MAHOUT_WORK/adult.text" -kL http://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.test
+```
+
+#### Data Preparation
+
+##### Clean Ups
+
+```
+awk 'BEGIN { FS=", " } {printf $NF; for (i=1; i<NF; i++) if (i != 3) printf ",%s", $i; printf "\n"}' "$MAHOUT_WORK/adult.data" |
+sed -e "s/^\s*<=50K/0/" -e "s/^\s*>50K/1/" |
+sed '1 i\
+class,age,workclass,education,education-num,marital-status,occupation,relationship,race,sex,capital-gain,capital-loss,hours-per-week,native-country\
+' > "$MAHOUT_WORK/income-train-data-0.csv"
+
+awk 'BEGIN { FS=", " } {printf $NF; for (i=1; i<NF; i++) if (i != 3) printf ",%s", $i; printf "\n"}' "$MAHOUT_WORK/adult.test" |
+sed -e "s/^\s*<=50K/0/" -e "s/^\s*>50K/1/" |
+sed '1 i\
+class,age,workclass,education,education-num,marital-status,occupation,relationship,race,sex,capital-gain,capital-loss,hours-per-week,native-country\
+' > "$MAHOUT_WORK/income-test-data-0.csv"
+```
+
+##### Imputation (substituting missing data) -- <sub>http://en.wikipedia.org/wiki/Imputation_(statistics)</sub>
+
+Attribute values for some instances might be missing from the training and test data files. There are several strategies for handling missing values - these include:
+
+* Replacing each missing value with a fixed constant.
+* Substituting missing values with the mean of observed values for numeric attributes and the mode (most frequently occurring value) for categorical attributes.
+* Using the attribute values of the nearest neighbors.
+* Employing regression-based imputation.
+
+Note the missing value script computes the mean (for numeric features), and mode (for categorical features), based only on examples in the training file. These values are then used to fill in missing values in both the training and the test data. The above strategy for dealing with missing values may not be appropriate for all applications and you should choose an appropriate strategy based on the specific application needs.
+
+##### Randomly Shuffle Training Data Set
+
+You can randomly shuffle the order of examples in the training set to improve the prediction accuracy of models. This is true, especially for algorithms that learn from one observation at a time (e.g. SGD in online learning), rather than algorithms that learn from the entire batch of training examples.
+
+To randomly order the training examples, the following command adds a random number to each example in the first column (excluding the header, which is assigned -1), sorts the examples based on the column value and then strips off the column.
+
+```bash
+awk '{printf "%s,%s\n", (NR==1 ? -1 : rand()), $0}' "$MAHOUT_WORK/income-train-data-0.csv" |
+sort --key 1 --numeric-sort | sed 's/^[^,]*,//' | tee "$MAHOUT_WORK/income-train-data.csv"
+```
+
+##### Additional Notes
+
+Here are four additional data preparation and cleansing operations that you can apply to datasets:
+
+* Outliers: Outliers are values that are dissimilar from the rest of the data and can adversely impact model performance. You can detect outliers by looking at histograms and box plots (see the next lab). The decision to remove outliers is subjective - before you remove them, you should consider if they are genuine or erroneous. Some algorithms like those based on decision trees are, in general, more resilient to outliers. You may decide to remove the particular instance, or change the particular value using any of the strategies for missing data (mentioned above).
+* Feature Scaling: Feature scaling is widely used to normalize attribute values in machine learning algorithms. For a numeric attribute, feature scaling is implemented by subtracting the attribute mean from each attribute value and then dividing the result by the standard deviation: feature scaling rescales attribute values so that they have zero-mean and unit-variance, and fall in similar ranges – this ensures faster convergence of gradient descent-based learning algorithms.
+* Downsampling: To handle extremely large datasets, certain ML algorithms train models on random samples that are much smaller in size. Here, you can preserve class proportions in the sample using techniques such as stratified sampling. In many applications (e.g. online advertising), the class distribution is imbalanced with skewed occurrence of one class (e.g. no-clicks). In such cases, the model training algorithm may give more importance to the majority class and ignore the minority class when learning model parameters. One strategy to deal with imbalanced classes is to downsample the dominant class. Here, we create a new training dataset that retains all examples belonging to the minority class and a sample containing an equal number of examples from the majority class. We then train a predictive model against the new training dataset with a balanced class distribution.
+* Importance Weights: Instead of downsampling the majority class, a different strategy is to assign an importance weight to each example from the minority class – to ensure a balanced class distribution, the importance weight is selected as the ratio of the majority and minority classes. Thus, importance weights are a useful mechanism for correcting class imbalance without adding or removing examples from the training data. In addition to balancing class distributions, importance weights are also a useful tool for meeting specific application requirements. For instance, in some applications like adult content detection, there is a significant cost associated with misclassifying a positive example and so one can penalize misclassification of positive examples by assigning them higher importance weights.
+
+#### Data Analysis
+
+```bash
+R
+install.packages('ggplot2')
+install.packages('ROCR')
+
+? read.csv
+income <- read.csv('/workspace/mahout-work/income-train-data.csv', header=T, strip.white=T) # 
+income$class <- as.factor(income$class)
+
+summary(income) # shows the statistic summary on the entire dataset.
+str(income) # shows the structure of the data object.
+
+library('ggplot2')
+qplot(data=income, x=age, main="Class-wise Histogram of Age", binwidth=3, position="dodge", fill=class)
+```
+
